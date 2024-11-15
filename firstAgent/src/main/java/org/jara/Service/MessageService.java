@@ -1,14 +1,9 @@
 package org.jara.Service;
 
 import lombok.RequiredArgsConstructor;
-import org.jara.Dto.Key.KeyDto;
 import org.jara.Dto.KeyAndTypeDto;
 import org.jara.Dto.MessageAndTypeEncryptDto;
-import org.jara.Entity.key.Key;
-import org.jara.Mapper.KeyMapper;
 import org.jara.Mapper.MessageMapper;
-import org.jara.Repository.KeyRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
@@ -24,10 +19,11 @@ import java.util.function.Function;
 public class MessageService {
 
     private String message;
-    private final MessageService messageService;
     private final MessageMapper messageMapper;
-    private final KeyRepository keyRepository;
-    private final KeyMapper keyMapper;
+    private SecretKey secretKey;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
+    private Map<Character, Character> substitutionMap = new HashMap<>();
     private HashMap<String, Consumer<KeyAndTypeDto>> installKey = new HashMap<>();
     private HashMap<String, Runnable> generateKey = new HashMap<>();
     private HashMap<String, Runnable> sendingKey = new HashMap<>();
@@ -86,6 +82,7 @@ public class MessageService {
     }
 
     public void generate(String method){
+        System.out.println(method);
         generateKey.get(method).run();
     }
 
@@ -101,39 +98,29 @@ public class MessageService {
     /**
      * Шифр перестановки или замены Генератор Установка ключа
      */
-
     private void getKeyPermutationOrReplacementCipher(KeyAndTypeDto substitutionMap){
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
-        keyDto.setSubstitutionMap(substitutionMap.getSubstitutionMap());
-        keyRepository.delete(keyRepository.findById(1L).get());
-        keyRepository.save(keyMapper.keyToKeyDto(keyDto));
+        substitutionMap = (KeyAndTypeDto) substitutionMap.getSubstitutionMap();
     }
 
     /**
      * Шифр симметричный Установка ключа
      */
-    private void getKeySimmetric(KeyAndTypeDto secretKey){
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
-        keyDto.setSecretKey(secretKey.getSecretKey());
-        keyRepository.delete(keyRepository.findById(1L).get());
-        keyRepository.save(keyMapper.keyToKeyDto(keyDto));
+    private void getKeySimmetric(KeyAndTypeDto secretKeyIn){
+        secretKey = secretKeyIn.getSecretKey();
     }
 
     /**
      * Шифр ассимметричный Установка ключа
      */
-    private void getKeyAsimmetric(KeyAndTypeDto publicKey){
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
-        keyDto.setPublicKey(publicKey.getPublicKey());
-        keyRepository.delete(keyRepository.findById(1L).get());
-        keyRepository.save(keyMapper.keyToKeyDto(keyDto));
+    private void getKeyAsimmetric(KeyAndTypeDto publicKeyIn){
+        publicKey = publicKeyIn.getPublicKey();
     }
 
     /**
      * Шифр Симметричный Отправка ключа
      */
     private void sendKeySimetric(){
-        SecretKey secretKey = keyMapper.keyDtoToKey(keyRepository.findById(1L).get()).getSecretKey();
+//        secretKey вот он)
         //Отправка ключа через клиент
     }
 
@@ -141,7 +128,7 @@ public class MessageService {
      * Шифр Ассимитричный Отправка ключа
      */
     private void sendKeyAssimetric(){
-        PublicKey publicKey = keyMapper.keyDtoToKey(keyRepository.findById(1L).get()).getPublicKey();
+//        publicKey
         //Отправка ключа через клиент
     }
 
@@ -149,7 +136,7 @@ public class MessageService {
      * Шифр перестановки или замены Генератор Отправка ключа
      */
     private void sendKeyPermutationOrReplacementCipher(){
-        Map<Character, Character> substitutionMap = keyMapper.keyDtoToKey(keyRepository.findById(1L).get()).getSubstitutionMap();;
+//        substitutionMap
         //Отправка ключа через клиент
     }
 
@@ -158,27 +145,24 @@ public class MessageService {
      */
     private void generatePermutationOrReplacementCipher(){
         Map<Character, Character> substitutionMap = new HashMap<>();
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
 
         substitutionMap.put('H', 'Z');
         substitutionMap.put('E', 'Y');
         substitutionMap.put('L', 'X');
         substitutionMap.put('O', 'W');
-        keyDto.setSubstitutionMap(substitutionMap);
-        keyRepository.delete(keyRepository.findById(1L).get());
-        keyRepository.save(keyMapper.keyToKeyDto(keyDto));
+        this.substitutionMap = substitutionMap;
+
     }
 
     /**
      * Шифр перестановки или замены Шифр
      */
     private String encryptPermutationOrReplacementCipher(String message){
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
         StringBuilder encryptedText = new StringBuilder();
 
         for (char c : message.toCharArray()) {
-            if (keyDto.getSubstitutionMap().containsKey(c)) {
-                encryptedText.append(keyDto.getSubstitutionMap().get(c));
+            if (substitutionMap.containsKey(c)) {
+                encryptedText.append(substitutionMap.get(c));
             } else {
                 encryptedText.append(c);
             }
@@ -191,9 +175,8 @@ public class MessageService {
      * Шифр перестановки или замены Расшифр
      */
     private String deEncryptPermutationOrReplacementCipher(String message){
-        KeyDto keyDto = keyMapper.keyDtoToKey(keyRepository.findById(1L).get());
         Map<Character, Character> reverseMap = new HashMap<>();
-        for (Map.Entry<Character, Character> entry : keyDto.getSubstitutionMap().entrySet()) {
+        for (Map.Entry<Character, Character> entry : substitutionMap.entrySet()) {
             reverseMap.put(entry.getValue(), entry.getKey());
         }
 
@@ -214,7 +197,6 @@ public class MessageService {
      * Шифр Симметричный Шифровки
      */
     private String symmetricEncrypt(String message) {
-        SecretKey key = keyRepository.findById(1L).get().getSecretKey();
         Cipher cipher = null;
         try {
             cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -224,7 +206,7 @@ public class MessageService {
             throw new RuntimeException(e);
         }
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, key);
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -245,7 +227,6 @@ public class MessageService {
      * Шифр Симметричный Расшифр
      */
     private String symmetricDecrypt(String message)  {
-        SecretKey key = keyRepository.findById(1L).get().getSecretKey();
         Cipher cipher = null;
         try {
             cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -255,7 +236,7 @@ public class MessageService {
             throw new RuntimeException(e);
         }
         try {
-            cipher.init(Cipher.DECRYPT_MODE, key);
+            cipher.init(Cipher.DECRYPT_MODE, publicKey);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
@@ -284,18 +265,13 @@ public class MessageService {
             throw new RuntimeException(e);
         }
         keyGenerator.init(128);
-        Key key = keyRepository.findById(1L).get();
-        SecretKey secretKey = keyGenerator.generateKey();
-        keyRepository.delete(key);
-        key.setSecretKey(secretKey);
-        keyRepository.save(key);
+        this.secretKey = keyGenerator.generateKey();
     }
 
     /**
      * Шифр Ассимметричный Шифровки
      */
     private String assimitricEncrypt(String message) {
-        PublicKey publicKey = keyRepository.findById(1L).get().getPublicKey();
         Cipher cipher = null;
         try {
             cipher = Cipher.getInstance("RSA");
@@ -326,7 +302,6 @@ public class MessageService {
      * Шифр Ассимметричный Расшифр
      */
     private String assimitricDecrypt(String message) {
-        PrivateKey privateKey = keyRepository.findById(1L).get().getPrivateKey();
         Cipher cipher = null;
         try {
             cipher = Cipher.getInstance("RSA");
@@ -366,11 +341,9 @@ public class MessageService {
         }
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        Key key = keyRepository.findById(1L).get();
-        keyRepository.delete(key);
-        key.setPrivateKey(keyPair.getPrivate());
-        key.setPublicKey(keyPair.getPublic());
-        keyRepository.save(key);
+
+        this.privateKey = keyPair.getPrivate();
+        this.publicKey = keyPair.getPublic();
 
     }
 
