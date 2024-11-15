@@ -3,7 +3,7 @@ package org.jara.Service;
 import lombok.RequiredArgsConstructor;
 import org.jara.Dto.KeyAndTypeDto;
 import org.jara.Dto.MessageAndTypeEncryptDto;
-import org.jara.client.AgentTwo;
+import org.jara.client.AgentOne;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
@@ -21,7 +21,7 @@ public class MessageService {
     private String message;
     private SecretKey secretKey;
     private PrivateKey privateKey;
-    private final AgentTwo agentTwo;
+    private final AgentOne agentTwo;
     private PublicKey publicKey;
     private Map<Character, Character> substitutionMap = new HashMap<>();
     private HashMap<String, Consumer<KeyAndTypeDto>> installKey = new HashMap<>();

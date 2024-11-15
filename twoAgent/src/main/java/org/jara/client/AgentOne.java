@@ -5,13 +5,10 @@ import org.jara.Dto.MessageAndTypeEncryptDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Map;
-
 @FeignClient(name = "AgentTwo", url = "http://localhost:8081")
-public interface AgentTwo {
+public interface AgentOne {
 
     /**
      * На вход принимается открытое сообщение и метод шифрования, получаем зашифрованное сообщение.
@@ -33,4 +30,3 @@ public interface AgentTwo {
     @GetMapping("/get_public_key")
     ResponseEntity<?> get_public_key(@RequestBody KeyAndTypeDto keyAndTypeDto);
 }
-
