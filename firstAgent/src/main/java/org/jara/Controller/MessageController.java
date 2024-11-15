@@ -4,10 +4,7 @@ import org.jara.Dto.KeyAndTypeDto;
 import org.jara.Dto.MessageAndTypeEncryptDto;
 import org.jara.Service.MessageService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/message")
@@ -15,6 +12,17 @@ public class MessageController {
 
     private MessageService messageService;
 
+
+    @PostMapping("/save")
+    public ResponseEntity<?> saveMessage(@RequestBody String message){
+        messageService.saveMessage(message);
+        return ResponseEntity.ok("save");
+    }
+
+    @PostMapping("/give")
+    public String giveMessage(){
+        return messageService.getMessage();
+    }
     /**
      * На вход принимается открытое сообщение и метод шифрования, получаем зашифрованное сообщение.
      **/
