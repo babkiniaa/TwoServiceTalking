@@ -9,6 +9,6 @@ public class MessageAndTypeEncryptDto {
 
     private String message;
 
-    private String type;
+    private String method;
 
 }

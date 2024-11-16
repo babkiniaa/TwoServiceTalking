@@ -31,7 +31,7 @@ public class MessageController {
     /**
      * На вход принимается открытое сообщение и метод шифрования, получаем зашифрованное сообщение.
      **/
-    @GetMapping("/encrypt")
+    @PostMapping("/encrypt")
     public String encrypt(@RequestBody MessageAndTypeEncryptDto messageAndTypeEncrypt){
         return messageService.encrypt(messageAndTypeEncrypt);
     }
@@ -61,7 +61,7 @@ public class MessageController {
      *  На вход принимается зашифрованное сообщение и метод шифрования,
      *  выводится открытое сообщение
      **/
-    @GetMapping("/get_encrypted_msg")
+    @PostMapping("/get_encrypted_msg")
     public String get_encrypted_msg(@RequestBody MessageAndTypeEncryptDto messageAndTypeEncryptDto){
         return messageService.get_encrypted_msg(messageAndTypeEncryptDto);
     }
@@ -94,7 +94,7 @@ public class MessageController {
      *  На вход принимается метод шифрования и открытый ключ от собеседника,
      *  открытый ключ сохраняется на стороне собеседника
      **/
-    @GetMapping("/get_public_key")
+    @PostMapping("/get_public_key")
     public ResponseEntity<?> get_public_key(@RequestBody KeyAndTypeDto keyAndTypeDto){
         messageService.get_public_key(keyAndTypeDto);
 

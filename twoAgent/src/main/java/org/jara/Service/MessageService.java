@@ -61,13 +61,13 @@ public class MessageService {
     }
 
     public String encrypt(MessageAndTypeEncryptDto messageAndTypeEncryptDto) {
-        message = encrypt.get(messageAndTypeEncryptDto.getType()).apply(messageAndTypeEncryptDto.getMessage());
+        message = encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage());
 
         return message;
     }
 
     public void encrypt_and_send(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
-        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getType()).apply(messageAndTypeEncryptDto.getMessage()));
+        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage()));
         agentTwo.encrypt(messageAndTypeEncryptDto);
     }
 
@@ -76,8 +76,9 @@ public class MessageService {
     }
 
     public String get_encrypted_msg(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
-        message = deEncrypt.get(messageAndTypeEncryptDto.getType()).apply(messageAndTypeEncryptDto.getMessage());
-
+        message = deEncrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage());
+        System.out.println(message);
+        System.out.println(1);
         return message;
     }
 
@@ -98,8 +99,8 @@ public class MessageService {
     /**
      * Шифр перестановки или замены Генератор Установка ключа
      */
-    private void getKeyPermutationOrReplacementCipher(KeyAndTypeDto substitutionMap){
-        substitutionMap = (KeyAndTypeDto) substitutionMap.getSubstitutionMap();
+    private void getKeyPermutationOrReplacementCipher(KeyAndTypeDto substitutionMapIn){
+        this.substitutionMap = substitutionMapIn.getSubstitutionMap();
     }
 
     /**
