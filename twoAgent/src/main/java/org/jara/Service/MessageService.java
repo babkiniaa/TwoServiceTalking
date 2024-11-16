@@ -77,8 +77,6 @@ public class MessageService {
 
     public String get_encrypted_msg(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
         message = deEncrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage());
-        System.out.println(message);
-        System.out.println(1);
         return message;
     }
 
@@ -107,16 +105,15 @@ public class MessageService {
      * Шифр симметричный Установка ключа
      */
     private void getKeySimmetric(KeyAndTypeDto secretKeyIn){
-        secretKey = secretKeyIn.getSecretKey();
+        this.secretKey = secretKeyIn.getSecretKey();
     }
 
     /**
      * Шифр ассимметричный Установка ключа
      */
     private void getKeyAsimmetric(KeyAndTypeDto publicKeyIn){
-        publicKey = publicKeyIn.getPublicKey();
+        privateKey = publicKeyIn.getPrivateKey();
     }
-
     /**
      * Шифр Симметричный Отправка ключа
      */
@@ -133,7 +130,7 @@ public class MessageService {
     private void sendKeyAssimetric(){
         KeyAndTypeDto keyAndTypeDto = new KeyAndTypeDto();
         keyAndTypeDto.setMethod("Asimmetric");
-        keyAndTypeDto.setPublicKey(publicKey);
+        keyAndTypeDto.setPrivateKey(privateKey);
         agentTwo.get_public_key(keyAndTypeDto);
     }
 
@@ -243,7 +240,7 @@ public class MessageService {
             throw new RuntimeException(e);
         }
         try {
-            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }

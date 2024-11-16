@@ -113,7 +113,7 @@ public class MessageService {
      * Шифр ассимметричный Установка ключа
      */
     private void getKeyAsimmetric(KeyAndTypeDto publicKeyIn){
-        publicKey = publicKeyIn.getPublicKey();
+        privateKey = publicKeyIn.getPrivateKey();
     }
 
     /**
@@ -132,7 +132,7 @@ public class MessageService {
     private void sendKeyAssimetric(){
         KeyAndTypeDto keyAndTypeDto = new KeyAndTypeDto();
         keyAndTypeDto.setMethod("Asimmetric");
-        keyAndTypeDto.setPublicKey(publicKey);
+        keyAndTypeDto.setPrivateKey(privateKey);
         agentTwo.get_public_key(keyAndTypeDto);
     }
 
@@ -242,7 +242,7 @@ public class MessageService {
             throw new RuntimeException(e);
         }
         try {
-            cipher.init(Cipher.DECRYPT_MODE, publicKey);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
         } catch (InvalidKeyException e) {
             throw new RuntimeException(e);
         }
