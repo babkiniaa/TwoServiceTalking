@@ -13,6 +13,9 @@ import java.util.Map;
 @FeignClient(name = "AgentTwo", url = "http://localhost:8080")
 public interface AgentTwo {
 
+    @PostMapping("/message/save")
+    ResponseEntity<?> saveMessage(@RequestBody Map<String, Object> requestBody);
+
     /**
      * На вход принимается открытое сообщение и метод шифрования, получаем зашифрованное сообщение.
      **/

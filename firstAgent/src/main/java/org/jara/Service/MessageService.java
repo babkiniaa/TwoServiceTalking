@@ -67,7 +67,7 @@ public class MessageService {
     }
 
     public void encrypt_and_send(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
-        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage()));
+//        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage()));
         agentTwo.encrypt(messageAndTypeEncryptDto);
     }
 

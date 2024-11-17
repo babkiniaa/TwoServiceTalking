@@ -67,12 +67,12 @@ public class MessageService {
     }
 
     public void encrypt_and_send(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
-        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage()));
+//        messageAndTypeEncryptDto.setMessage(encrypt.get(messageAndTypeEncryptDto.getMethod()).apply(messageAndTypeEncryptDto.getMessage()));
         agentTwo.encrypt(messageAndTypeEncryptDto);
     }
 
     public void send_encrypted_msg(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
-        agentTwo.encrypt(messageAndTypeEncryptDto);
+        agentTwo.get_encrypted_msg(messageAndTypeEncryptDto);
     }
 
     public String get_encrypted_msg(MessageAndTypeEncryptDto messageAndTypeEncryptDto){
@@ -112,7 +112,7 @@ public class MessageService {
      * Шифр ассимметричный Установка ключа
      */
     private void getKeyAsimmetric(KeyAndTypeDto publicKeyIn){
-        privateKey = publicKeyIn.getPrivateKey();
+        this.privateKey = publicKeyIn.getPrivateKey();
     }
     /**
      * Шифр Симметричный Отправка ключа

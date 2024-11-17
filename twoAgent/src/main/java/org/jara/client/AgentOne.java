@@ -8,8 +8,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Map;
+
 @FeignClient(name = "AgentTwo", url = "http://localhost:8081")
 public interface AgentOne {
+
+    @PostMapping("/message/save")
+    ResponseEntity<?> saveMessage(@RequestBody Map<String, Object> requestBody);
 
     /**
      * На вход принимается открытое сообщение и метод шифрования, получаем зашифрованное сообщение.
